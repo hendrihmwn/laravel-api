@@ -15,8 +15,20 @@ class ProductController extends BaseController
      */
     public function index()
     {
-        $products = Product::all();
-        return $this->sendResponse($products, 'Products retrieved successfully.');
+        $limit = 10;
+        $page = 0;
+        if(isset($_GET['limit'])){
+            $limit = $_GET['limit'];
+        }
+        if(isset($_GET['page'])){
+            $page = $_GET['page'];
+        }
+        $products = Product::skip($page)->take($limit)->get();
+        return $this->sendResponse($products, 'Products retrieved successfully.', 200, [
+            'limit' => $limit,
+            'page' => $page,
+            'total' => count($products)
+        ]);
     }
 
     /**

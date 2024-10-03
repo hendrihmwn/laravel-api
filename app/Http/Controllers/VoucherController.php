@@ -18,8 +18,20 @@ class VoucherController extends BaseController
      */
     public function index()
     {
-        $vouchers = Voucher::all();
-        return $this->sendResponse($vouchers, 'Vouchers retrieved successfully.');
+        $limit = 10;
+        $page = 0;
+        if(isset($_GET['limit'])){
+            $limit = $_GET['limit'];
+        }
+        if(isset($_GET['page'])){
+            $page = $_GET['page'];
+        }
+        $vouchers = Voucher::skip($page)->take($limit)->get();
+        return $this->sendResponse($vouchers, 'Vouchers retrieved successfully.', 200, [
+            'limit' => $limit,
+            'page' => $page,
+            'total' => count($vouchers)
+        ]);
     }
 
     /**
@@ -221,7 +233,7 @@ class VoucherController extends BaseController
             if (is_null($voucher)) {
                 return $this->sendError('Voucher is not valid.',[],404);
             }
-            
+
             $voucher_usage = VoucherUsage::where('product_id', $input['product_id'])
                         ->where('voucher_id',$voucher->id)
                         ->where('user_id',auth()->guard('api')->user()->id)

@@ -7,3 +7,6 @@ run-app:
 
 run-scheduler:
 	php artisan schedule:work
+
+run-test:
+	php artisan test
